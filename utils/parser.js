@@ -2,7 +2,7 @@ const _ = require('lodash')
 
 const messageRegex = /([^\n]+)\n\nстарая цена:\s(\d+)[^\n]+\nновая цена:\s(\d+)\s\((.+)\)\s([^\n]+)\n\nразмеры:\s([^\n]+)/
 
-const expandSizes = (sizesString) => {
+const expandSizes = sizesString => {
     const [type, ...sizes] = sizesString.split(' ')
 
     if (type === '#One') {
@@ -12,7 +12,7 @@ const expandSizes = (sizesString) => {
     } else if (/\w{2}/.test(type)) {
         return {
             type,
-            sizes: _.flatMap(sizes, (size) => {
+            sizes: _.flatMap(sizes, size => {
                 if (size.includes('-')) {
                     const [fromSize, toSize] = size.split('-').map(parseFloat)
 
@@ -23,7 +23,7 @@ const expandSizes = (sizesString) => {
             })
         }
     } else {
-        throw "Unknown size type"
+        throw 'Unknown size type'
     }
 }
 
@@ -32,7 +32,15 @@ class Parser {
         const parsedMessage = messageRegex.exec(message)
 
         if (parsedMessage) {
-            const [_, name, oldPrice, newPrice, promoCode, promoLink, sizeString] = parsedMessage
+            const [
+                _,
+                name,
+                oldPrice,
+                newPrice,
+                promoCode,
+                promoLink,
+                sizeString
+            ] = parsedMessage
 
             const sizes = expandSizes(sizeString)
             const discount = (1 - newPrice / oldPrice) * 100

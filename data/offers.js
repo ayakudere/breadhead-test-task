@@ -9,8 +9,10 @@ class Offers {
         const tableExists = await this.knex.schema.hasTable(tableName)
 
         if (!tableExists) {
-            return await this.knex.schema.createTable(tableName, (t) => {
-                t.increments('id').primary().unsigned()
+            return await this.knex.schema.createTable(tableName, t => {
+                t.increments('id')
+                    .primary()
+                    .unsigned()
                 t.string('name')
                 t.decimal('price')
                 t.string('promo_link')
@@ -27,35 +29,34 @@ class Offers {
 
         const { name, priceFrom, priceTo, discountFrom, discountTo, sizes } = params
 
-        if (name)
-            query = query.whereRaw(`LOWER(name) LIKE ?`, [`%${name}%`])
+        if (name) query = query.whereRaw(`LOWER(name) LIKE ?`, [`%${name}%`])
 
-        if (priceFrom)
-            query = query.where('price', '>=', priceFrom)
+        if (priceFrom) query = query.where('price', '>=', priceFrom)
 
-        if (priceTo)
-            query = query.where('price', '<=', priceTo)
+        if (priceTo) query = query.where('price', '<=', priceTo)
 
-        if (discountFrom)
-            query = query.where('discount', '>=', discountFrom)
+        if (discountFrom) query = query.where('discount', '>=', discountFrom)
 
-        if (discountTo)
-            query = query.where('discount', '<=', discountTo)
+        if (discountTo) query = query.where('discount', '<=', discountTo)
 
         if (sizes) {
             const parts = sizes.split(',')
 
-            query = query.where((builder) => {
+            query = query.where(builder => {
                 return parts.reduce((sizeQuery, rawSize) => {
                     const [size, sizeType] = rawSize.split(':').reverse()
 
                     if (sizeType) {
-                        return sizeQuery.orWhere((q) =>
-                            q.where('size_type', '=', sizeType).andWhereRaw('sizes \\?| array[?]', size)
+                        return sizeQuery.orWhere(q =>
+                            q
+                                .where('size_type', '=', sizeType)
+                                .andWhereRaw('sizes \\?| array[?]', size)
                         )
                     } else {
-                        return sizeQuery.orWhere((q) =>
-                            q.where('size_type', 'is', null).andWhereRaw('sizes \\?| array[?]', size)
+                        return sizeQuery.orWhere(q =>
+                            q
+                                .where('size_type', 'is', null)
+                                .andWhereRaw('sizes \\?| array[?]', size)
                         )
                     }
                 }, builder)

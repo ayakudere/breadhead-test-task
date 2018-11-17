@@ -11,14 +11,14 @@ const knex = require('knex')({
         password: process.env.DB_PASS,
         database: process.env.DB_NAME
     }
-});
+})
 
 const Offers = require('./data/offers')
 const Parser = require('./utils/parser')
 
 const app = express()
 
-app.use(bodyParser.json());
+app.use(bodyParser.json())
 
 const port = 3000
 
@@ -29,18 +29,17 @@ app.use((req, res, next) => {
     next()
 })
 
-
 app.get('/offer', async (req, res) => {
     res.json(await offers.get(req.query))
 })
 
 app.post('/parse', (req, res) => {
-    Promise.all(req.body.map(rawMessage =>
-        offers.insert(Parser.parse(rawMessage))
-    )).then(x => res.send(x))
+    Promise.all(
+        req.body.map(rawMessage => offers.insert(Parser.parse(rawMessage)))
+    ).then(x => res.send(x))
 })
 
 app.listen(port, async () => {
     await offers.init()
-    console.log("Running on port: " + port)
+    console.log('Running on port: ' + port)
 })
