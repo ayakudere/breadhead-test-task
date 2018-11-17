@@ -1,3 +1,5 @@
+const moment = require('moment')
+
 const tableName = 'offers'
 
 class Offers {
@@ -10,7 +12,7 @@ class Offers {
 
         if (!tableExists) {
             return await this.knex.schema.createTable(tableName, t => {
-                t.increments('id')
+                t.integer('id')
                     .primary()
                     .unsigned()
                 t.string('name')
@@ -72,8 +74,9 @@ class Offers {
         return query
     }
 
-    insert(offer) {
+    insert(offer, message_id, date) {
         return this.knex.table(tableName).insert({
+            id: message_id,
             name: offer.name,
             brand: offer.brand,
             shoeType: offer.shoeType,
@@ -82,7 +85,11 @@ class Offers {
             discount: offer.discount,
             size_type: offer.sizes.type,
             sizes: JSON.stringify(offer.sizes.sizes),
-            date: 'now'
+            date: moment(date).utc().format()
+        }).catch(e => {
+            if (e.constraint !== 'offers_pkey') {    // Ignoring already inserted offers
+                throw e
+            }
         })
     }
 }

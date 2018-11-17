@@ -35,8 +35,13 @@ app.get('/offer', async (req, res) => {
 
 app.post('/parse', (req, res) => {
     Promise.all(
-        req.body.map(Parser.parse).filter(x => x).map(offers.insert)
-    ).then(x => res.json({ message: `Inserted ${x.length} rows` }))
+        req.body
+            .map(message => ({ ...message, offer: Parser.parse(message.message) }))
+            .filter(message => message.offer)
+            .map(message => offers.insert(message.offer, message.id, message.date))
+    )
+        .then(x => res.json({ message: `Inserted ${x.length} rows` }))
+        .catch(err => res.status(500).json({ message: err }))
 })
 
 app.listen(port, async () => {
