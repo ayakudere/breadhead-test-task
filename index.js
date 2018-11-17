@@ -18,7 +18,7 @@ const Parser = require('./utils/parser')
 
 const app = express()
 
-app.use(bodyParser.json())
+app.use(bodyParser.json({ limit: '50mb', extended: true }))
 
 const port = process.env.PORT || 3000
 
