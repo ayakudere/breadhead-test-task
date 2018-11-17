@@ -16,7 +16,7 @@ class Offers {
                 t.string('promo_link')
                 t.float('discount')
                 t.string('size_type', 2)
-                t.json('sizes')
+                t.jsonb('sizes')
                 t.timestamp('date')
             })
         }
@@ -25,7 +25,7 @@ class Offers {
     get(params) {
         let query = this.knex(tableName)
 
-        const { name, priceFrom, priceTo, discountFrom, discountTo } = params
+        const { name, priceFrom, priceTo, discountFrom, discountTo, sizes } = params
 
         if (name)
             query = query.whereRaw(`LOWER(name) LIKE ?`, [`%${name}%`])
@@ -41,6 +41,26 @@ class Offers {
 
         if (discountTo)
             query = query.where('discount', '<=', discountTo)
+
+        if (sizes) {
+            const parts = sizes.split(',')
+
+            query = query.where((builder) => {
+                return parts.reduce((sizeQuery, rawSize) => {
+                    const [size, sizeType] = rawSize.split(':').reverse()
+
+                    if (sizeType) {
+                        return sizeQuery.orWhere((q) =>
+                            q.where('size_type', '=', sizeType).andWhereRaw('sizes \\?| array[?]', size)
+                        )
+                    } else {
+                        return sizeQuery.orWhere((q) =>
+                            q.where('size_type', 'is', null).andWhereRaw('sizes \\?| array[?]', size)
+                        )
+                    }
+                }, builder)
+            })
+        }
 
         return query
     }
