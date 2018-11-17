@@ -1,6 +1,7 @@
 const _ = require('lodash')
 
 const brands = require('./brands.json')
+const shoeTypes = require('./shoeType.json')
 
 const messageRegex = /([^\n]+)\n\nстарая цена:\s(\d+)[^\n]+\nновая цена:\s(\d+)\s\((.+)\)\s([^\n]+)\n\nразмеры:\s([^\n]+)/
 
@@ -44,11 +45,14 @@ class Parser {
                 sizeString
             ] = parsedMessage
 
-            const brand = brands.find(b => name.toLowerCase().includes(b.toLowerCase()))
+            const findInName = (needle) => name.toLowerCase().includes(needle)
+
+            const brand = brands.find(findInName)
+            const shoeType = shoeTypes.find(findInName)
             const sizes = expandSizes(sizeString)
             const discount = (1 - newPrice / oldPrice) * 100
 
-            return { name, price: parseFloat(newPrice), promoLink, sizes, discount, brand }
+            return { name, price: parseFloat(newPrice), promoLink, sizes, discount, brand, shoeType }
         }
     }
 }
