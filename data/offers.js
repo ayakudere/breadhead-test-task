@@ -14,6 +14,7 @@ class Offers {
                     .primary()
                     .unsigned()
                 t.string('name')
+                t.string('brand')
                 t.decimal('price')
                 t.string('promo_link')
                 t.float('discount')
@@ -27,9 +28,11 @@ class Offers {
     get(params) {
         let query = this.knex(tableName)
 
-        const { name, priceFrom, priceTo, discountFrom, discountTo, sizes } = params
+        const { name, brand, priceFrom, priceTo, discountFrom, discountTo, sizes } = params
 
         if (name) query = query.whereRaw(`LOWER(name) LIKE ?`, [`%${name}%`])
+
+        if (brand) query = query.where('brand', '=', brand.toLowerCase())
 
         if (priceFrom) query = query.where('price', '>=', priceFrom)
 
@@ -69,6 +72,7 @@ class Offers {
     insert(offer) {
         return this.knex.table(tableName).insert({
             name: offer.name,
+            brand: offer.brand.toLowerCase(),
             price: offer.price,
             promo_link: offer.promoLink,
             discount: offer.discount,
