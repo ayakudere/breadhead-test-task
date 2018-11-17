@@ -35,8 +35,8 @@ app.get('/offer', async (req, res) => {
 
 app.post('/parse', (req, res) => {
     Promise.all(
-        req.body.map(rawMessage => offers.insert(Parser.parse(rawMessage)))
-    ).then(x => res.send(x))
+        req.body.map(Parser.parse).filter(x => x).map(offers.insert)
+    ).then(x => res.json({ message: `Inserted ${x.length} rows` }))
 })
 
 app.listen(port, async () => {
