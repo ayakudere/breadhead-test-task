@@ -31,16 +31,16 @@ class Offers {
             query = query.whereRaw(`LOWER(name) LIKE ?`, [`%${name}%`])
 
         if (priceFrom)
-            query = query.where('price', '>', priceFrom)
+            query = query.where('price', '>=', priceFrom)
 
         if (priceTo)
-            query = query.where('price', '<', priceTo)
+            query = query.where('price', '<=', priceTo)
 
         if (discountFrom)
-            query = query.where('discount', '>', discountFrom)
+            query = query.where('discount', '>=', discountFrom)
 
         if (discountTo)
-            query = query.where('discount', '<', discountTo)
+            query = query.where('discount', '<=', discountTo)
 
         return query
     }
