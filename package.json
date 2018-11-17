@@ -1,0 +1,12 @@
+{
+  "name": "breadhead-test-task",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:ayakudere/breadhead-test-task.git",
+  "author": "Vladislav Kobyakov <ayakudere@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
