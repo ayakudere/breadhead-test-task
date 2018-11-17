@@ -8,7 +8,7 @@ const expandSizes = (sizesString) => {
     } else if (type[0] === '#') {
         return { type: null, sizes: sizesString.replace(/#/g, '').split(' ') }
     } else if (/\w{2}/.test(type)) {
-        return { type, sizes }
+        return { type, sizes: sizes.map(size => size.replace(/,$/, '')) }
     } else {
         throw "Unknown size type"
     }
@@ -19,9 +19,12 @@ class Parser {
         const parsedMessage = messageRegex.exec(message)
 
         if (parsedMessage) {
-            const [_, name, oldPrice, newPrice, promoCode, promoLink, sizes] = parsedMessage
+            const [_, name, oldPrice, newPrice, promoCode, promoLink, sizeString] = parsedMessage
 
-            return { name, newPrice, promoLink, sizes: expandSizes(sizes) }
+            const sizes = expandSizes(sizeString)
+            const discount = (1 - newPrice / oldPrice) * 100
+
+            return { name, price: parseFloat(newPrice), promoLink, sizes, discount }
         }
     }
 }
