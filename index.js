@@ -30,8 +30,8 @@ app.use((req, res, next) => {
 })
 
 
-app.get('/offer', (req, res) => {
-    res.json(offers.get(req.query))
+app.get('/offer', async (req, res) => {
+    res.json(await offers.get(req.query))
 })
 
 app.post('/parse', (req, res) => {

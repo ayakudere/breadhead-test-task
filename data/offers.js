@@ -1,4 +1,3 @@
-const stubOffers = []
 const tableName = 'offers'
 
 class Offers {
@@ -24,7 +23,26 @@ class Offers {
     }
 
     get(params) {
-        return stubOffers
+        let query = this.knex(tableName)
+
+        const { name, priceFrom, priceTo, discountFrom, discountTo } = params
+
+        if (name)
+            query = query.whereRaw(`LOWER(name) LIKE ?`, [`%${name}%`])
+
+        if (priceFrom)
+            query = query.where('price', '>', priceFrom)
+
+        if (priceTo)
+            query = query.where('price', '<', priceTo)
+
+        if (discountFrom)
+            query = query.where('discount', '>', discountFrom)
+
+        if (discountTo)
+            query = query.where('discount', '<', discountTo)
+
+        return query
     }
 
     insert(offer) {
