@@ -31,7 +31,7 @@ class Offers {
     get(params) {
         let query = this.knex(tableName)
 
-        const { name, brand, shoeType, priceFrom, priceTo, discountFrom, discountTo, sizes } = params
+        const { name, brand, shoeType, priceFrom, priceTo, discountFrom, discountTo, sizes, dateFrom, dateTo } = params
 
         if (name) query = query.whereRaw(`LOWER(name) LIKE ?`, [`%${name}%`])
 
@@ -46,6 +46,10 @@ class Offers {
         if (discountFrom) query = query.where('discount', '>=', discountFrom)
 
         if (discountTo) query = query.where('discount', '<=', discountTo)
+
+        if (dateFrom) query = query.where('date', '>=', moment.unix(dateFrom).utc().format())
+
+        if (dateTo) query = query.where('date', '<=', moment.unix(dateTo).utc().format())
 
         if (sizes) {
             const parts = sizes.split(',')
@@ -85,7 +89,7 @@ class Offers {
             discount: offer.discount,
             size_type: offer.sizes.type,
             sizes: JSON.stringify(offer.sizes.sizes),
-            date: moment(date).utc().format()
+            date: moment.unix(date).utc().format()
         }).catch(e => {
             if (e.constraint !== 'offers_pkey') {    // Ignoring already inserted offers
                 throw e
